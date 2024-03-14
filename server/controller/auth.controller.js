@@ -1,7 +1,7 @@
 const User = require("../models/User.model")
 const bcryptjs = require('bcryptjs')
-
-exports.signup = async(req, res) => {
+const errorHandler = require('../utils/error')
+exports.signup = async(req, res, next) => {
     const {username, email, password} = req.body
     const hashedPass = bcryptjs.hashSync(password, 10)
     const newUser = new User({username, email, password: hashedPass})
@@ -11,6 +11,6 @@ exports.signup = async(req, res) => {
             message: "User Successfully added",
             newUser})
     }catch(err){
-        res.status(500).json(err.message)
+        next(err)
     }
 }
