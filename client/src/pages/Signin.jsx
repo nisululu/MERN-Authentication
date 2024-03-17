@@ -1,11 +1,13 @@
 import axios from 'axios'
 import React, { useState } from 'react'
+import { Link, useNavigate } from 'react-router-dom'
 
 const Signin = () => {
 
   const [formData, setFormData] = useState({})
   const [loading, setLoading] = useState(null)
   const [error, setError] = useState(null)
+  const navigate = useNavigate()
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value })
@@ -15,13 +17,16 @@ const Signin = () => {
   const handleSubmit = async (e) => {
     e.preventDefault()
 
-    try{
+    try {
       const config = { headers: { "Content-Type": "application/json" } }
       const { data } = await axios.post('/api/auth/signin', formData, config)
 
-      console.log(data);
+      if (data.success === false) {
+        return
+      }
+      navigate('/')
 
-    }catch(err) {
+    } catch (err) {
       console.log(err.response.data);
     }
   }
@@ -72,8 +77,13 @@ const Signin = () => {
             </button>
           </div>
 
+          <div className='flex justify-between'>
+            <p>Already have an account?</p>
+            <Link to='/sign-up'>Sign up</Link>
+          </div>
+
           <div>
-            {/* {error && <p className='text-red-700'>Ops, something went wrong.</p>} */}
+            {error && <p className='text-red-700'>Ops, something went wrong.</p>}
           </div>
         </form>
       </div>

@@ -1,41 +1,42 @@
 import axios from 'axios'
 import React, { useState } from 'react'
-import {Link} from 'react-router-dom'
-
+import { Link, useNavigate } from 'react-router-dom'
 
 const Signup = () => {
 
   const [formData, setFormData] = useState({})
   const [error, setError] = useState(null)
   const [loading, setLoading] = useState(null)
+  const navigate = useNavigate()
 
   const handleChange = (e) => {
-    setFormData({...formData,[e.target.name] : e.target.value})
+    setFormData({ ...formData, [e.target.name]: e.target.value })
     setError(null)
   }
 
   const handleSubmit = async (e) => {
-    e.preventDefault()    
+    e.preventDefault()
 
-    try{
+    try {
       setLoading(true)
       setError(false)
+
       const config = { headers: { "Content-Type": "application/json" } }
-      const {data} = await axios.post('/api/auth/signup',formData, config)
-      if(data){
-        console.log(data);
+      const { data } = await axios.post('/api/auth/signup', formData, config)
+
+      if (data) {
         setLoading(false)
+        navigate('/sign-in')
       }
-    }catch(err) {
+    } catch (err) {
       setLoading(false)
       setError(true)
-      console.log(err.response.data);
     }
   }
 
   return (
     <div className='min-h-full flex flex-col justify-center px-6 pt-20 lg:px-8'>
-      
+
       <div>
         <h2 className='text-center text-2xl font-bold leading-9 tracking-tight'>Sign up to create new account</h2>
       </div>
@@ -43,7 +44,7 @@ const Signup = () => {
       <div className='mt-10 max-w-sm sm:mx-auto sm:w-full sm:max-w-md'>
         <form className='space-y-5' onSubmit={handleSubmit}>
           <div>
-          <label className='font-medium text-small text-gray-900'>User Name</label>
+            <label className='font-medium text-small text-gray-900'>User Name</label>
             <div className="mt-2">
               <input
                 onChange={handleChange}
@@ -69,7 +70,7 @@ const Signup = () => {
           </div>
 
           <div>
-          <label className='font-medium text-small text-gray-900'>Password</label>
+            <label className='font-medium text-small text-gray-900'>Password</label>
             <div className="mt-2">
               <input
                 onChange={handleChange}
@@ -82,31 +83,31 @@ const Signup = () => {
           </div>
 
           <div>
-              <button
-                type="submit"
-                className="flex w-full justify-center rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
-              >
-                {loading? "Loading..." : "Sign up"}
-              </button>
-            </div>
+            <button
+              type="submit"
+              className="flex w-full justify-center rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+            >
+              {loading ? "Loading..." : "Sign up"}
+            </button>
+          </div>
 
-            <div>
-              <button
-                type="submit"
-                className="flex w-full justify-center rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
-              >
-                Continue with Google
-              </button>
-            </div>
+          <div>
+            <button
+              type="submit"
+              className="flex w-full justify-center rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+            >
+              Continue with Google
+            </button>
+          </div>
 
-            <div className='flex justify-between'>
-              <p>Have an account?</p>
-              <Link to='/sign-in'>Sign in</Link>
-            </div>
+          <div className='flex justify-between'>
+            <p>Have an account?</p>
+            <Link to='/sign-in'>Sign in</Link>
+          </div>
 
-            <div>
-              {error && <p className='text-red-700'>Ops, something went wrong.</p>}
-            </div>
+          <div>
+            {error && <p className='text-red-700'>Ops, something went wrong.</p>}
+          </div>
         </form>
       </div>
 
