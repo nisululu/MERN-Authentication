@@ -1,33 +1,34 @@
 import axios from 'axios'
 import React, { useState } from 'react'
+import { useSelector, useDispatch } from 'react-redux'
 import { Link, useNavigate } from 'react-router-dom'
+import { signInFailure, signInStart, signInSuccess } from '../slice/user.slice'
 
 const Signin = () => {
 
   const [formData, setFormData] = useState({})
-  const [loading, setLoading] = useState(null)
-  const [error, setError] = useState(null)
   const navigate = useNavigate()
+  const dispatch = useDispatch()
+  const {currentUser, loading, error} = useSelector((state)=> state.user)
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value })
-    setLoading(null)
   }
 
   const handleSubmit = async (e) => {
     e.preventDefault()
 
     try {
+      dispatch(signInStart())
       const config = { headers: { "Content-Type": "application/json" } }
       const { data } = await axios.post('/api/auth/signin', formData, config)
 
-      if (data.success === false) {
-        return
-      }
+      dispatch(signInSuccess(data))
       navigate('/')
 
     } catch (err) {
-      console.log(err.response.data);
+      console.log(err);
+      dispatch(signInFailure(err.response.data.message))
     }
   }
 
@@ -72,8 +73,7 @@ const Signin = () => {
               type="submit"
               className="flex w-full justify-center rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
             >
-              {/* {loading ? "Loading..." : "Sign in"} */}
-              Sign in
+              {loading ? "Loading..." : "Sign in"}
             </button>
           </div>
 
@@ -83,7 +83,7 @@ const Signin = () => {
           </div>
 
           <div>
-            {error && <p className='text-red-700'>Ops, something went wrong.</p>}
+            {error && <p className='text-red-700'>{error || "Something went wrong."}</p>}
           </div>
         </form>
       </div>
