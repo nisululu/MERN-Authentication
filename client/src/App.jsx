@@ -18,7 +18,7 @@ function App() {
       <Routes>
         <Route path='/' Component={Home} />
         <Route element={<ProtectedRoute currentUser={currentUser} />}>
-          <Route path='/profile' Component={Profile} />
+          <Route path='/profile' element={<Profile currentUser={currentUser} />} />
         </Route>
         <Route path='/about' Component={About} />
         <Route path='/sign-in' Component={Signin} />
