@@ -10,7 +10,7 @@ const Header = ({currentUser}) => {
           <li><Link to='/'>Home</Link></li>
           <li><Link to='/about'>About Us</Link></li>
           {
-            currentUser.username? <li><Link to='/profile'><img className='rounded-full w-6 object-cover' src={currentUser.profilePicture} alt=""/></Link></li> : <li><Link to='/sign-in'>Sign in</Link></li>
+            currentUser.username? <li><Link to='/profile'><img className='rounded-full w-6 h-6 object-cover' src={currentUser.profilePicture} alt=""/></Link></li> : <li><Link to='/sign-in'>Sign in</Link></li>
           }
 
         </ul>

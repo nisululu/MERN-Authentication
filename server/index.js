@@ -2,6 +2,7 @@ const express = require('express')
 const mongoose = require('mongoose')
 const dotenv = require('dotenv')
 const errorMiddleware = require('./middleware/error')
+const cookieParser = require('cookie-parser')
 dotenv.config();
 
 //connecting mongodb
@@ -12,6 +13,7 @@ mongoose
 
 const app = express()
 app.use(express.json())
+app.use(cookieParser())
 
 
 //importing routes
