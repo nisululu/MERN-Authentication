@@ -3,6 +3,7 @@ const mongoose = require('mongoose')
 const dotenv = require('dotenv')
 const errorMiddleware = require('./middleware/error')
 const cookieParser = require('cookie-parser')
+const path = require ('path')
 dotenv.config();
 
 //connecting mongodb
@@ -11,7 +12,12 @@ mongoose
     .then(() => console.log("Database connected"))
     .catch((error) => console.log(error))
 
+const __dirname = path.resolve()
 const app = express()
+app.use(express.static(__dirname, '/client/dist'))
+app.get('*', (req, res) => {
+    res.sendFile(path.join(__dirname, 'client', 'dist', 'index.html'))
+})
 app.use(express.json())
 app.use(cookieParser())
 
