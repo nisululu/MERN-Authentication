@@ -7,6 +7,5 @@ router
     .post('/signup', signup)
     .post('/signin', signin)
     .post('/google', google)
-    .put('/update/:id', isAuthenticatedUser, updateProfile)
 
 module.exports = router

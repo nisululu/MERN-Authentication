@@ -1,7 +1,11 @@
 const express = require('express')
-const {newTest} = require('../controller/user.controller')
+const { newTest, updateProfile, logout, deleteUser } = require('../controller/user.controller')
+const { isAuthenticatedUser } = require('../utils/authenticate')
 const router = express.Router()
 
-router.get('/',newTest)
+router
+    .put('/update/:id', isAuthenticatedUser, updateProfile)
+    .get('/logout', logout)
+    .delete('/delete/:id', deleteUser)
 
 module.exports = router

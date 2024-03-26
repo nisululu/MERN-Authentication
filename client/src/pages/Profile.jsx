@@ -3,7 +3,7 @@ import { getDownloadURL, getStorage, ref, uploadBytesResumable } from 'firebase/
 import { app } from '../firebase'
 import axios from 'axios'
 import { useDispatch } from 'react-redux'
-import { updateFailure, updateStart, updateSuccess } from '../slice/user.slice'
+import { deleteFailure, deleteStart, deleteSuccess, logoutFailure, logoutSuccess, updateFailure, updateStart, updateSuccess } from '../slice/user.slice'
 
 const Profile = ({ currentUser }) => {
 
@@ -18,8 +18,9 @@ const Profile = ({ currentUser }) => {
   const [password, setPassword] = useState("")
   const [image, setImage] = useState(undefined)
   const [loadImage, setLoadImage] = useState(0)
-  const { imageError, setImageError } = useState(null)
+  const { imageError, setImgError } = useState(false)
   const [formData, setFormData] = useState({})
+  const [updatedSuccess, setUpdatedSuccess] = useState(false)
   const dispatch = useDispatch()
 
   useEffect(() => {
@@ -39,7 +40,7 @@ const Profile = ({ currentUser }) => {
       setLoadImage(Math.round(progress))
     },
       (error) => {
-        setImageError(error)
+        setImgError(true)
       },
       () => {
         getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
@@ -51,25 +52,50 @@ const Profile = ({ currentUser }) => {
   const handleUpdate = async (e) => {
     e.preventDefault()
 
-    try{
+    try {
       dispatch(updateStart())
       const userData = {
-        email, 
+        email,
         username,
         password,
         profilePicture: formData.profilePicture
       }
-  
+
       const config = { headers: { "Content-Type": "application/json" } }
-      const {data} = await axios.put(`/api/auth/update/${currentUser._id}`, userData, config)
+      const { data } = await axios.put(`/api/user/update/${currentUser._id}`, userData, config)
+      console.log(data);
 
       dispatch(updateSuccess(data.rest))
+      setUpdatedSuccess(true)
 
-    }catch(err){
-      console.log(err);
+    } catch (err) {
       dispatch(updateFailure(err))
+      console.log(err);
     }
-   
+
+  }
+
+  const handleLogout = async () => {
+    try {
+      const { data } = await axios.get('/api/user/logout')
+      if (data) {
+        dispatch(logoutSuccess())
+      }
+    } catch (err) {
+      dispatch(logoutFailure())
+    }
+  }
+
+  const handleDelete = async () => {
+    try {
+      dispatch(deleteStart())
+      const { data } = await axios.delete(`/api/user/delete/${currentUser._id}`)
+      if (data) {
+        dispatch(deleteSuccess())
+      }
+    } catch (err) {
+      dispatch(deleteFailure(err))
+    }
   }
 
   return (
@@ -135,9 +161,10 @@ const Profile = ({ currentUser }) => {
         </button>
 
         <div className='flex justify-between'>
-          <span className='text-red-600'>Delete Account</span>
-          <span className='text-red-600'>Logout</span>
+          <span className='text-red-600' onClick={handleDelete}>Delete Account</span>
+          <span className='text-red-600' onClick={handleLogout}>Logout</span>
         </div>
+      {updatedSuccess && <span className='text-green-500'>Profile Updated Successfully</span>}
       </form>
     </div>
   )

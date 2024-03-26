@@ -70,27 +70,3 @@ exports.google = async (req, res, next) => {
     }
 }
 
-exports.updateProfile = async (req, res, next) => {
-    const { id } = req.params
-    const { password, username, email, profilePicture } = req.body
-
-    try {
-        const user = await User.findById(id)
-        if (!user) return next(errorHandler(400, "User not found!"))
-
-        if (password) {
-            hashedPassword = bcryptjs.hashSync(password, 10)
-        }
-
-        updateUser = await User.findByIdAndUpdate(id, { $set: { username, password: hashedPassword, email, profilePicture } }, { new: true })
-        const { password: hashedPass, ...rest } = updateUser._doc
-        res.status(200).json({
-            message: "user updated successfully",
-            rest
-        })
-
-
-    } catch (err) {
-        next(err)
-    }
-}
