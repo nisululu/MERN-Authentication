@@ -80,7 +80,7 @@ const Signin = () => {
 
 
           <div className='flex justify-between'>
-            <p>Already have an account?</p>
+            <p>Don't have an account?</p>
             <Link to='/sign-up'>Sign up</Link>
           </div>
 

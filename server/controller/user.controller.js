@@ -1,21 +1,21 @@
-const User = require("../models/User.model")
+const User = require("../models/user.model")
 const bcryptjs = require('bcryptjs')
 const errorHandler = require('../utils/error')
 const jwt = require('jsonwebtoken')
 
 exports.updateProfile = async (req, res, next) => {
     const { id } = req.params
-    const { password, username, email, profilePicture } = req.body
+    const { username, email, profilePicture } = req.body
 
     try {
         const user = await User.findById(id)
         if (!user) return next(errorHandler(400, "User not found!"))
 
-        if (password) {
-            req.body.password = bcryptjs.hashSync(password, 10)
+        if (req.body.password) {
+            req.body.password = bcryptjs.hashSync(req.body.password, 10)
         }
 
-        updateUser = await User.findByIdAndUpdate(id, { $set: { username, password: req.body.password, email, profilePicture } }, { new: true })
+        const updateUser = await User.findByIdAndUpdate(id, { $set: req.body.password ? { username, password: req.body.password, email, profilePicture } : { username, email, profilePicture } }, { new: true })
         const { password: hashedPass, ...rest } = updateUser._doc
         res.status(200).json({
             message: "user updated successfully",
@@ -28,20 +28,20 @@ exports.updateProfile = async (req, res, next) => {
     }
 }
 
-exports.logout = async (req, res, next) => {
-    res.cookie('token', null, { httpOnly: true, expires: new Date(Date.now())}).json({message:"Successfully logged out!"})
+exports.logout = async (req, res) => {
+    res.cookie('token', null, { httpOnly: true, expires: new Date(Date.now()) }).json({ message: "Successfully logged out!" })
 }
 
-exports.deleteUser = async(req, res, next) => {
-    const {id} = req.params
+exports.deleteUser = async (req, res, next) => {
+    const { id } = req.params
 
-    try{
+    try {
         const user = await User.findById(id)
         if (!user) return next(errorHandler(400, "User not found!"))
 
         await user.deleteOne()
-        res.status(200).json({message: "User Deleted Successfully"})
-    }catch(err){
+        res.status(200).json({ message: "User Deleted Successfully" })
+    } catch (err) {
         next(err)
     }
 }

@@ -1,5 +1,5 @@
 const express = require('express')
-const { newTest, updateProfile, logout, deleteUser } = require('../controller/user.controller')
+const { updateProfile, logout, deleteUser } = require('../controller/user.controller')
 const { isAuthenticatedUser } = require('../utils/authenticate')
 const router = express.Router()
 
