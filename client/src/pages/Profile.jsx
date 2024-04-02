@@ -4,24 +4,14 @@ import { app } from '../firebase'
 import axios from 'axios'
 import { useDispatch } from 'react-redux'
 import { deleteFailure, deleteStart, deleteSuccess, logoutFailure, logoutSuccess, updateFailure, updateStart, updateSuccess } from '../slice/user.slice'
-import { getAuth, signOut } from "firebase/auth";
 
 const Profile = ({ currentUser }) => {
 
-  // const [formData, setFormData] = useState({
-  //   email: currentUser.email,
-  //   username: currentUser.username,
-  // })
-
-  const auth = getAuth();
   const fileRef = useRef()
-  const [username, setUsername] = useState(currentUser.username || "")
-  const [email, setEmail] = useState(currentUser.email || "")
-  const [password, setPassword] = useState("")
   const [image, setImage] = useState(undefined)
   const [loadImage, setLoadImage] = useState(0)
   const { imageError, setImgError } = useState(false)
-  const [formData, setFormData] = useState({username:currentUser.username, email: currentUser.email })
+  const [formData, setFormData] = useState({})
   const [updatedSuccess, setUpdatedSuccess] = useState(false)
   const dispatch = useDispatch()
 
@@ -30,10 +20,6 @@ const Profile = ({ currentUser }) => {
       handleImgUpload(image)
     }
   }, [image])
-
-  const handleChange = (e) => {
-    setFormData({...formData, [e.target.name]:e.target.value})
-  }
 
   const handleImgUpload = async (image) => {
     const storage = getStorage(app)
@@ -60,9 +46,15 @@ const Profile = ({ currentUser }) => {
 
     try {
       dispatch(updateStart())
+      const userData = {
+        email,
+        username,
+        password,
+        profilePicture: formData.profilePicture
+      }
 
       const config = { headers: { "Content-Type": "application/json" } }
-      const { data } = await axios.put(`/api/user/update/${currentUser._id}`, formData, config)
+      const { data } = await axios.put(`/api/user/update/${currentUser._id}`, userData, config)
       console.log(data);
 
       dispatch(updateSuccess(data.rest))
@@ -83,7 +75,6 @@ const Profile = ({ currentUser }) => {
       }
     } catch (err) {
       dispatch(logoutFailure())
-      console.log(err);
     }
   }
 
@@ -121,11 +112,11 @@ const Profile = ({ currentUser }) => {
 
         <div className="mt-2">
           <input
-            onChange={handleChange}
+            onChange={(e) => setUsername(e.target.value)}
             name='username'
             type="username"
             placeholder='username'
-            value={formData.username}
+            value={username}
             required
             className="block w-full rounded-md border-0 py-1.5 px-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
           />
@@ -133,11 +124,11 @@ const Profile = ({ currentUser }) => {
 
         <div className="mt-2">
           <input
-            onChange={handleChange}
+            onChange={(e) => setEmail(e.target.value)}
             name='email'
             type="email"
             placeholder='email'
-            value={formData.email}
+            value={email}
             required
             className="block w-full rounded-md border-0 py-1.5 px-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
           />
@@ -145,11 +136,11 @@ const Profile = ({ currentUser }) => {
 
         <div className="mt-2">
           <input
-            onChange={handleChange}
+            onChange={(e) => setPassword(e.target.value)}
             name='password'
             type="password"
             placeholder='password'
-            value={formData.password}
+            value={password}
             className="block w-full rounded-md border-0 py-1.5 px-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
           />
         </div>
