@@ -5,17 +5,17 @@ const jwt = require('jsonwebtoken')
 
 exports.updateProfile = async (req, res, next) => {
     const { id } = req.params
-    const { password, username, email, profilePicture } = req.body
+    const { username, email, profilePicture } = req.body
 
     try {
         const user = await User.findById(id)
         if (!user) return next(errorHandler(400, "User not found!"))
 
-        if (password) {
-            req.body.password = bcryptjs.hashSync(password, 10)
+        if (req.body.password) {
+            req.body.password = bcryptjs.hashSync(req.body.password, 10)
         }
 
-        updateUser = await User.findByIdAndUpdate(id, { $set: { username, password: req.body.password, email, profilePicture } }, { new: true })
+        const updateUser = await User.findByIdAndUpdate(id, { $set: req.body.password ? { username, password: req.body.password, email, profilePicture } : { username, email, profilePicture } }, { new: true })
         const { password: hashedPass, ...rest } = updateUser._doc
         res.status(200).json({
             message: "user updated successfully",

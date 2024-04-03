@@ -11,7 +11,7 @@ const Profile = ({ currentUser }) => {
   const [image, setImage] = useState(undefined)
   const [loadImage, setLoadImage] = useState(0)
   const { imageError, setImgError } = useState(false)
-  const [formData, setFormData] = useState({})
+  const [formData, setFormData] = useState({username:currentUser.username, email: currentUser.email })
   const [updatedSuccess, setUpdatedSuccess] = useState(false)
   const dispatch = useDispatch()
 
@@ -20,6 +20,10 @@ const Profile = ({ currentUser }) => {
       handleImgUpload(image)
     }
   }, [image])
+
+  const handleChange = (e) => {
+    setFormData({...formData, [e.target.name]:e.target.value})
+  }
 
   const handleImgUpload = async (image) => {
     const storage = getStorage(app)
@@ -46,17 +50,8 @@ const Profile = ({ currentUser }) => {
 
     try {
       dispatch(updateStart())
-      const userData = {
-        email,
-        username,
-        password,
-        profilePicture: formData.profilePicture
-      }
-
       const config = { headers: { "Content-Type": "application/json" } }
-      const { data } = await axios.put(`/api/user/update/${currentUser._id}`, userData, config)
-      console.log(data);
-
+      const { data } = await axios.put(`/api/user/update/${currentUser._id}`, formData, config)
       dispatch(updateSuccess(data.rest))
       setUpdatedSuccess(true)
 
@@ -112,11 +107,11 @@ const Profile = ({ currentUser }) => {
 
         <div className="mt-2">
           <input
-            onChange={(e) => setUsername(e.target.value)}
+            onChange={handleChange}
             name='username'
             type="username"
             placeholder='username'
-            value={username}
+            value={formData.username}
             required
             className="block w-full rounded-md border-0 py-1.5 px-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
           />
@@ -124,11 +119,11 @@ const Profile = ({ currentUser }) => {
 
         <div className="mt-2">
           <input
-            onChange={(e) => setEmail(e.target.value)}
+            onChange={handleChange}
             name='email'
             type="email"
             placeholder='email'
-            value={email}
+            value={formData.email}
             required
             className="block w-full rounded-md border-0 py-1.5 px-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
           />
@@ -136,11 +131,11 @@ const Profile = ({ currentUser }) => {
 
         <div className="mt-2">
           <input
-            onChange={(e) => setPassword(e.target.value)}
+            onChange={handleChange}
             name='password'
             type="password"
             placeholder='password'
-            value={password}
+            value={formData.password}
             className="block w-full rounded-md border-0 py-1.5 px-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
           />
         </div>

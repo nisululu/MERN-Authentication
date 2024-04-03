@@ -13,12 +13,13 @@ mongoose
     .catch((error) => console.log(error))
 
 const app = express()
-app.use(express.static(path.join(__dirname, '/client/dist')))
-app.get('*', (req, res) => {
-    res.sendFile(path.resolve(__dirname, 'client/dist/index.html'))
-})
+
 app.use(express.json())
 app.use(cookieParser())
+app.use(express.static(path.join(__dirname, "../client/")))
+app.get("*", (req, res) => {
+    res.sendFile(path.resolve(__dirname, "../client//index.html"))
+})
 
 
 //importing routes
